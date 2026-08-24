@@ -76,7 +76,9 @@ footer{background:#111827;color:#fff;text-align:center;padding:25px}
 <div class="wrap">
 <h2>Place Your Order</h2>
 <div class="form">
-<form id="orderForm">
+<form id="orderForm" method="POST" action="https://script.google.com/macros/s/AKfycbyGs3gQcUDEvmyGuJVsRja4Xfp9fO0XIUS_PzJ0JWt9KzMY9JrwmmqNczhKtors5L_TkQ/exec" target="cameraOrderFrame"><iframe name="cameraOrderFrame" id="cameraOrderFrame" style="display:none;"></iframe>
+<input type="hidden" name="product" value="WiFi Mini Camera">
+<input type="hidden" name="price" id="orderPrice" value="3999">
 <label>Choose Your Deal</label>
 <div class="deals">
 <label class="deal"><input type="radio" name="deal" value="Pack of 1 - Rs. 2,499">Pack of 1<br><strong>Rs. 2,499</strong></label>
@@ -86,19 +88,19 @@ footer{background:#111827;color:#fff;text-align:center;padding:25px}
 <p style="font-size:13px;color:#777;margin-top:8px">Cash on Delivery available.</p>
 
 <label>Full Name</label>
-<input id="name" required placeholder="Enter your full name">
+<input id="name" name="name" required placeholder="Enter your full name">
 
 <label>Phone Number</label>
-<input id="phone" type="tel" required placeholder="03XXXXXXXXX">
+<input id="phone" name="phone" type="tel" required placeholder="03XXXXXXXXX">
 
 <label>House / Street Address</label>
-<textarea id="address" required placeholder="Enter complete delivery address"></textarea>
+<textarea id="address" name="address" required placeholder="Enter complete delivery address"></textarea>
 
 <label>Near Famous Place / Landmark</label>
-<input id="landmark" required placeholder="e.g. Near ABC Market">
+<input id="landmark" name="landmark" required placeholder="e.g. Near ABC Market">
 
 <label>City</label>
-<input id="city" required placeholder="Enter your city">
+<input id="city" name="city" required placeholder="Enter your city">
 
 <div id="success" class="success">✅ Order Placed Successfully!<br><span style="font-weight:600;font-size:14px">Thank you! Your order has been submitted.</span></div>
 <button class="btn" id="placeOrder" type="submit">PLACE ORDER</button>
@@ -187,23 +189,48 @@ What customers look for in a compact WiFi camera
 <footer>© 2026 WiFi Mini Camera • All Rights Reserved</footer>
 
 <script>
-document.getElementById("orderForm").addEventListener("submit",function(e){
-e.preventDefault();
-if(!this.checkValidity()){this.reportValidity();return;}
-const btn=document.getElementById("placeOrder");
-const success=document.getElementById("success");
-btn.disabled=true;
-btn.textContent="ORDER PLACED ✓";
-success.style.display="block";
-success.scrollIntoView({behavior:"smooth",block:"center"});
-setTimeout(()=>{
-this.reset();
-document.querySelector('input[name="deal"][value="Pack of 2 - Rs. 3,999"]').checked=true;
-success.style.display="none";
-btn.disabled=false;
-btn.textContent="PLACE ORDER";
-},5000);
-});
+(function () {
+  const form = document.getElementById("orderForm");
+  const button = document.getElementById("placeOrder");
+  const success = document.getElementById("success");
+  const price = document.getElementById("orderPrice");
+
+  document.querySelectorAll('input[name="deal"]').forEach(function (radio) {
+    radio.addEventListener("change", function () {
+      if (this.value.includes("2,499")) price.value = "2499";
+      else if (this.value.includes("3,999")) price.value = "3999";
+      else price.value = "4999";
+    });
+  });
+
+  form.addEventListener("submit", function (e) {
+    if (!form.checkValidity()) {
+      e.preventDefault();
+      form.reportValidity();
+      return;
+    }
+
+    button.disabled = true;
+    button.textContent = "SUBMITTING ORDER...";
+
+    // Allow the native POST to Google Apps Script through the hidden iframe.
+    setTimeout(function () {
+      success.style.display = "block";
+      success.scrollIntoView({ behavior: "smooth", block: "center" });
+      button.textContent = "ORDER PLACED ✓";
+
+      setTimeout(function () {
+        form.reset();
+        const defaultDeal = document.querySelector('input[name="deal"][value="Pack of 2 - Rs. 3,999"]');
+        if (defaultDeal) defaultDeal.checked = true;
+        price.value = "3999";
+        success.style.display = "none";
+        button.disabled = false;
+        button.textContent = "PLACE ORDER";
+      }, 5000);
+    }, 1200);
+  });
+})();
 </script>
 </body>
 </html>
