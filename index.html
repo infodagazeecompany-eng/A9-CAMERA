@@ -223,6 +223,25 @@ What customers look for in a compact WiFi camera
     button.disabled = true;
     button.textContent = "SUBMITTING ORDER...";
 
+    // TikTok Pixel: track a valid order with the required content_id.
+    if (window.ttq) {
+      const selectedDeal = document.querySelector('input[name="deal"]:checked');
+      const orderValue = Number(price.value || 0);
+      ttq.track('PlaceAnOrder', {
+        content_id: 'WIFI-MINI-CAMERA',
+        content_type: 'product',
+        content_name: 'WiFi Mini Camera',
+        contents: [{
+          content_id: 'WIFI-MINI-CAMERA',
+          content_name: 'WiFi Mini Camera',
+          quantity: 1,
+          price: orderValue
+        }],
+        value: orderValue,
+        currency: 'PKR'
+      });
+    }
+
     // Allow the native POST to Google Apps Script through the hidden iframe.
     setTimeout(function () {
       success.style.display = "block";
